@@ -1,0 +1,67 @@
+# This is a list of commands I used to set up WRF-Hydro after downloading the libraries.
+# This list of commands may be incomplete - review the NCAR and 3rd party (youtube) instructions to verify
+# One difference between those 2 install instructions is installing netcdf-4 with opendap
+
+    1  cd ../WRF
+    8  export CC=gcc
+   73  export LDFLAGS=-L$DIR/hdf5/lib
+   74  export CPPFLAGS=-I$DIR/hdf5/include
+   75  cd WRF-Hydro/WRF/
+
+   81  cd ../src/
+
+   82  cd hdf5-1.10.6/
+   83  ./configure --prefix=$DIR/grib2 --with-zlib=$DIR/grib2 --enable-fortran --enable-cxx
+   84  make
+   85  make install
+   86  env
+   87  export PATH=$DIR/grib2/bin:$PATH
+   88  export LD_LIBRARY_PATH=$DIR/grib2/lib:$LD_LIBRARY_PATH
+
+   90  cd ../netcdf-c-4.7.3/
+   95  ./configure --prefix=$DIR/netcdf --enable-netcdf-4 --enable-netcdf4 --enable-shared --disable-dap
+   96  make -j2; make install
+   97  make check
+
+   98  cd ..
+   99  cd netcdf-fortran-4.5.2/
+  100  env
+  101  export LD_LIBRARY_PATH=$DIR/grib2/lib:$DIR/netcdf/lib
+  102  export LD_LIBRARY_PATH=$DIR/grib2/lib:$DIR/netcdf/lib:$LD_LIBRARY_PATH
+  103  env
+  107  CPPFLAGS=-I$DIR/netcdf/include LDFLAGS=-L$DIR/netcdf/lib
+  108  ./configure --prefix=$DIR/netcdf
+  109  make -j2; make install
+  110  make check
+
+  111  cd ../../compile-tests/
+  112  gfortran TEST_1_fortran_only_fixed.f 
+  113  ./a.out 
+  114  gfortran TEST_2_fortran_only_free.f90 
+  115  ./a.out 
+  116  gcc TEST_3_c_only.c 
+  117  ./a.out 
+  121  gcc -c -m64 TEST_4_fortran+c_c.c 
+  122  gfortran -c -m64 TEST_4_fortran+c_f.f90 
+  123  gfortran -m64 TEST_4_fortran+c_f.o TEST_4_fortran+c_c.o 
+  124  ./a.out 
+  125  ./TEST_csh.csh 
+  126  ./TEST_perl.pl 
+  127  ./TEST_sh.sh 
+  132  gfortran -c 01_fortran+c+netcdf_f.f 
+  133  gcc -c 01_fortran+c+netcdf_c.c 
+  134  gfortran 01_fortran+c+netcdf_c.o 01_fortran+c+netcdf_f.o -L$DIR/netcdf/lib -lnetcdff -lnetcdf
+  135  ./a.out 
+  136  mpif90 -c 02_fortran+c+netcdf+mpi_f.f
+  137  mpicc -c 02_fortran+c+netcdf+mpi_c.c 
+  138  mpif90 02_fortran+c+netcdf+mpi_f.o 02_fortran+c+netcdf+mpi_c.o -L$DIR/netcdf/lib -lnetcdff -lnetcdf
+  139  mpirun ./a.out
+
+  162  cd ../WRF/
+  163  ls
+  164  ./configure 
+  165  ./compile em_real >& log.compile
+  166  cat log.compile 
+  167  ls
+  168  ls -ls main/*exe
+

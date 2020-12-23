@@ -1,0 +1,14 @@
+!#/usr/bin/bash
+
+# This code is intended to run the library tests that are available from NCAR
+# You must download their test files, but this will speed up testing if you have to do repeated troubleshooting
+
+gfortran -c 01_fortran+c+netcdf_f.f 
+gcc -c 01_fortran+c+netcdf_c.c 
+gfortran 01_fortran+c+netcdf_c.o 01_fortran+c+netcdf_f.o -L$DIR/netcdf/lib -lnetcdff -lnetcdf
+./a.out 
+
+mpif90 -c 02_fortran+c+netcdf+mpi_f.f
+mpicc -c 02_fortran+c+netcdf+mpi_c.c 
+mpif90 02_fortran+c+netcdf+mpi_f.o 02_fortran+c+netcdf+mpi_c.o -L$DIR/netcdf/lib -lnetcdff -lnetcdf
+mpirun ./a.out 
